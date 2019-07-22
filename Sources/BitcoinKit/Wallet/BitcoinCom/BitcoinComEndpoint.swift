@@ -31,22 +31,27 @@ public struct ApiEndPoint {
         init(network: Network) {
             switch network {
             case .mainnet:
-                self.baseUrl = "https://rest.bitcoin.com/v1/"
+                self.baseUrl = "https://api.blockcypher.com/v1/btc/main"
             case .testnet:
-                self.baseUrl = "https://trest.bitcoin.com/v1/"
+                self.baseUrl = "https://api.blockcypher.com/v1/btc/test3/"
             default:
                 fatalError("Bitcoin.com API is only available for Bitcoin Cash.")
             }
         }
 
         public func getUtxoURL(with addresses: [Address]) -> URL {
-            let parameter: String = "[" + addresses.map { "\"\($0.cashaddr)\"" }.joined(separator: ",") + "]"
-            let url = baseUrl + "address/utxo/\(parameter)"
-            return ApiEndPoint.convert(string: url)!
+            if let addr = addresses.first?.base58 {
+                let parameter: String = "\(addr)"
+                let url = baseUrl + "addrs/\(parameter)/full"
+                return ApiEndPoint.convert(string: url)!
+            }
+            else {
+                return ApiEndPoint.convert(string: "")!
+            }
         }
 
         public func getTransactionHistoryURL(with addresses: [Address]) -> URL {
-            let parameter: String = "[" + addresses.map { "\"\($0.cashaddr)\"" }.joined(separator: ",") + "]"
+            let parameter: String = "[" + addresses.map { "\"\($0.base58)\"" }.joined(separator: ",") + "]"
             let url = baseUrl + "address/transactions/\(parameter)"
             return ApiEndPoint.convert(string: url)!
         }

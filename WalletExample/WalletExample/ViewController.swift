@@ -41,7 +41,7 @@ class ViewController: UIViewController {
     
     func createWalletIfNeeded() {
         if wallet == nil {
-            let privateKey = PrivateKey(network: .testnet)
+            let privateKey = PrivateKey(network: .testnetBTC)
             wallet = Wallet(privateKey: privateKey)
             wallet?.save()
         }
@@ -49,9 +49,13 @@ class ViewController: UIViewController {
     
     func updateLabels() {
         qrCodeImageView.image = wallet?.address.qrImage()
-        addressLabel.text = wallet?.address.cashaddr
+        addressLabel.text = wallet?.address.base58
+        print(addressLabel.text)
         if let balance = wallet?.balance() {
-            balanceLabel.text = "Balance : \(balance) satoshi"
+            let b: Double = Double(balance)/100000000
+
+            balanceLabel.text = "Balance: \(b) BTC";
+//            balanceLabel.text = String(format: "Balance: %.9f BTC", b)
         }
     }
     

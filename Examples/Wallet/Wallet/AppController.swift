@@ -30,7 +30,7 @@ import KeychainAccess
 class AppController {
     static let shared = AppController()
 
-    let network = Network.testnet
+    let network = Network.testnetBTC
 
     private(set) var wallet: HDWallet? {
         didSet {

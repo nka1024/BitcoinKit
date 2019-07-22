@@ -17,19 +17,21 @@
 		1482B5F220279EB50098B612 /* SettingsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1482B5F120279EB50098B612 /* SettingsViewController.swift */; };
 		1482B5F42027A01B0098B612 /* AppController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1482B5F32027A01B0098B612 /* AppController.swift */; };
 		1482B5F62027A2590098B612 /* CreateWalletViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1482B5F52027A2590098B612 /* CreateWalletViewController.swift */; };
-		1482B5FA2028314B0098B612 /* KeychainAccess.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1482B5F92028314A0098B612 /* KeychainAccess.framework */; };
-		1482B5FB2028314B0098B612 /* KeychainAccess.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 1482B5F92028314A0098B612 /* KeychainAccess.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
-		293A2453210C6C4C0078B982 /* BitcoinKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 293A2452210C6C4C0078B982 /* BitcoinKit.framework */; };
+		DF2C7B1F22B26F7000F8C0AA /* BitcoinKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DF2C7B1E22B26F7000F8C0AA /* BitcoinKit.framework */; };
+		DF2C7B2222B26FD200F8C0AA /* KeychainAccess.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DF2C7B2022B26FC600F8C0AA /* KeychainAccess.framework */; };
+		DF2C7B2322B26FD200F8C0AA /* KeychainAccess.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = DF2C7B2022B26FC600F8C0AA /* KeychainAccess.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		DF2C7B2522B26FD200F8C0AA /* BitcoinKit.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = DF2C7B1E22B26F7000F8C0AA /* BitcoinKit.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
-		147F9724201FBD340071F49D /* Embed Frameworks */ = {
+		DF2C7B2622B26FD200F8C0AA /* Embed Frameworks */ = {
 			isa = PBXCopyFilesBuildPhase;
 			buildActionMask = 2147483647;
 			dstPath = "";
 			dstSubfolderSpec = 10;
 			files = (
-				1482B5FB2028314B0098B612 /* KeychainAccess.framework in Embed Frameworks */,
+				DF2C7B2522B26FD200F8C0AA /* BitcoinKit.framework in Embed Frameworks */,
+				DF2C7B2322B26FD200F8C0AA /* KeychainAccess.framework in Embed Frameworks */,
 			);
 			name = "Embed Frameworks";
 			runOnlyForDeploymentPostprocessing = 0;
@@ -49,8 +51,8 @@
 		1482B5F120279EB50098B612 /* SettingsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsViewController.swift; sourceTree = "<group>"; };
 		1482B5F32027A01B0098B612 /* AppController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppController.swift; sourceTree = "<group>"; };
 		1482B5F52027A2590098B612 /* CreateWalletViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CreateWalletViewController.swift; sourceTree = "<group>"; };
-		1482B5F92028314A0098B612 /* KeychainAccess.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = KeychainAccess.framework; path = Carthage/Build/iOS/KeychainAccess.framework; sourceTree = "<group>"; };
-		293A2452210C6C4C0078B982 /* BitcoinKit.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = BitcoinKit.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		DF2C7B1E22B26F7000F8C0AA /* BitcoinKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = BitcoinKit.framework; path = Carthage/Build/iOS/BitcoinKit.framework; sourceTree = "<group>"; };
+		DF2C7B2022B26FC600F8C0AA /* KeychainAccess.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = KeychainAccess.framework; path = Carthage/Build/iOS/KeychainAccess.framework; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -58,8 +60,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				293A2453210C6C4C0078B982 /* BitcoinKit.framework in Frameworks */,
-				1482B5FA2028314B0098B612 /* KeychainAccess.framework in Frameworks */,
+				DF2C7B2222B26FD200F8C0AA /* KeychainAccess.framework in Frameworks */,
+				DF2C7B1F22B26F7000F8C0AA /* BitcoinKit.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -104,8 +106,8 @@
 		147F9725201FBD3E0071F49D /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
-				293A2452210C6C4C0078B982 /* BitcoinKit.framework */,
-				1482B5F92028314A0098B612 /* KeychainAccess.framework */,
+				DF2C7B2022B26FC600F8C0AA /* KeychainAccess.framework */,
+				DF2C7B1E22B26F7000F8C0AA /* BitcoinKit.framework */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -120,7 +122,7 @@
 				14749510201FBC3E006D1CF8 /* Sources */,
 				14749511201FBC3E006D1CF8 /* Frameworks */,
 				14749512201FBC3E006D1CF8 /* Resources */,
-				147F9724201FBD340071F49D /* Embed Frameworks */,
+				DF2C7B2622B26FD200F8C0AA /* Embed Frameworks */,
 			);
 			buildRules = (
 			);
@@ -331,7 +333,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_STYLE = Automatic;
-				DEVELOPMENT_TEAM = 27AEDK3C9F;
+				DEVELOPMENT_TEAM = C2YJG5LAV9;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)/Carthage/Build/iOS",
@@ -339,7 +341,7 @@
 				INFOPLIST_FILE = Wallet/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-				PRODUCT_BUNDLE_IDENTIFIER = com.bitcoinkit.Wallet;
+				PRODUCT_BUNDLE_IDENTIFIER = com.nka1024.bitcoinkit;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 4.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -351,7 +353,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_STYLE = Automatic;
-				DEVELOPMENT_TEAM = 27AEDK3C9F;
+				DEVELOPMENT_TEAM = C2YJG5LAV9;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)/Carthage/Build/iOS",
@@ -359,7 +361,7 @@
 				INFOPLIST_FILE = Wallet/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-				PRODUCT_BUNDLE_IDENTIFIER = com.bitcoinkit.Wallet;
+				PRODUCT_BUNDLE_IDENTIFIER = com.nka1024.bitcoinkit;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 4.0;
 				TARGETED_DEVICE_FAMILY = "1,2";

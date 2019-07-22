@@ -13,7 +13,22 @@
 		298E17E62150C55E00FF6C77 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 298E17E52150C55E00FF6C77 /* Assets.xcassets */; };
 		298E17E92150C55E00FF6C77 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 298E17E72150C55E00FF6C77 /* LaunchScreen.storyboard */; };
 		29EA70342150C885009B6485 /* BitcoinKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 29EA70332150C885009B6485 /* BitcoinKit.framework */; };
+		DF2C7B1C22B2671400F8C0AA /* BitcoinKit.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 29EA70332150C885009B6485 /* BitcoinKit.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 /* End PBXBuildFile section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		DF2C7B1D22B2671400F8C0AA /* Embed Frameworks */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 10;
+			files = (
+				DF2C7B1C22B2671400F8C0AA /* BitcoinKit.framework in Embed Frameworks */,
+			);
+			name = "Embed Frameworks";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
 		298E17DB2150C55C00FF6C77 /* WalletExample.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = WalletExample.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -86,6 +101,7 @@
 				298E17D72150C55C00FF6C77 /* Sources */,
 				298E17D82150C55C00FF6C77 /* Frameworks */,
 				298E17D92150C55C00FF6C77 /* Resources */,
+				DF2C7B1D22B2671400F8C0AA /* Embed Frameworks */,
 			);
 			buildRules = (
 			);
@@ -294,12 +310,14 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = C2YJG5LAV9;
 				INFOPLIST_FILE = WalletExample/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = tech.yenom.WalletExample;
+				PRODUCT_BUNDLE_IDENTIFIER = com.nka1024.bitcoinkit;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 4.2;
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -311,12 +329,14 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = C2YJG5LAV9;
 				INFOPLIST_FILE = WalletExample/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = tech.yenom.WalletExample;
+				PRODUCT_BUNDLE_IDENTIFIER = com.nka1024.bitcoinkit;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 4.2;
 				TARGETED_DEVICE_FAMILY = "1,2";

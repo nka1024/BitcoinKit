@@ -1,0 +1,15 @@
+framework module BitcoinKit_Private [system] [extern_c] {
+    header "BitcoinKitPrivate.h"
+    link "secp256k1"
+    export *
+}
+
+//
+//explicit module A.Private {
+//
+//    // Here is the list of your private headers.
+//    header "Private1.h"
+//    header "Private2.h"
+//
+//    export *
+//}
