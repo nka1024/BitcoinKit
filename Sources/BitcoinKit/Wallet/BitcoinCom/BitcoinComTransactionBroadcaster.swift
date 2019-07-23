@@ -150,6 +150,7 @@ public final class BitcoinComTransactionBroadcaster: TransactionBroadcaster {
                 }
                 
                 print(r2);
+                completion?(r2.tx.hash)
 //                guard let r2 = String(bytes: data, encoding: .utf8) else {
 //                    print("broadcast response cannot be decoded.")
 //                    return
