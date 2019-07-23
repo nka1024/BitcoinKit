@@ -152,7 +152,7 @@ private struct BitcoinComTxModel: Codable {
     let confirmed: String // Date
     let received: String // Date
     let ver: Int
-    let lock_time: Int
+    let lock_time: Int?
     let double_spend: Bool
     let vin_sz: Int
     let vout_sz: Int
@@ -175,7 +175,7 @@ private struct BitcoinComTxModel: Codable {
         confirmed = try container.decode(String.self, forKey: .confirmed)
         received = try container.decode(String.self, forKey: .received)
         ver = try container.decode(Int.self, forKey: .ver)
-        lock_time = try container.decode(Int.self, forKey: .lock_time)
+        lock_time = try? container.decode(Int.self, forKey: .lock_time)
         double_spend = try container.decode(Bool.self, forKey: .double_spend)
         vin_sz = try container.decode(Int.self, forKey: .vin_sz)
         vout_sz = try container.decode(Int.self, forKey: .vout_sz)

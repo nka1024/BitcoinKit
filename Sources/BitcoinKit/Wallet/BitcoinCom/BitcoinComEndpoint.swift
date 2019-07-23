@@ -50,6 +50,12 @@ public struct ApiEndPoint {
             }
         }
 
+        public func getBalanceURL(with address: Address) -> URL {
+            let parameter: String = "\(address.base58)"
+            let url = baseUrl + "addrs/\(parameter)/?unspentOnly=true"
+            return ApiEndPoint.convert(string: url)!
+        }
+        
         public func getTransactionHistoryURL(with addresses: [Address]) -> URL {
             let parameter: String = "[" + addresses.map { "\"\($0.base58)\"" }.joined(separator: ",") + "]"
             let url = baseUrl + "address/transactions/\(parameter)"

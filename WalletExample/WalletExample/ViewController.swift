@@ -61,7 +61,7 @@ class ViewController: UIViewController {
     }
     
     func updateBalance() {
-        wallet?.reloadBalance(completion: { [weak self] (utxos) in
+        wallet?.reloadBalance(completion: { [weak self] (balance) in
             DispatchQueue.main.async { self?.updateLabels() }
         })
     }

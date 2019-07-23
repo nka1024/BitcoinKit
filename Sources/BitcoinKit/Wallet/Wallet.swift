@@ -42,7 +42,8 @@ final public class Wallet {
     private let utxoSelector: UtxoSelector
     private let transactionBuilder: TransactionBuilder
     private let transactionSigner: TransactionSigner
-
+    private let balanceProvider: BitcoinComBalanceProvider
+    
     public init(privateKey: PrivateKey,
                 dataStore: BitcoinKitDataStoreProtocol = UserDefaults.bitcoinKit,
                 addressProvider: AddressProvider? = nil,
@@ -72,6 +73,7 @@ final public class Wallet {
         self.utxoSelector = utxoSelector
         self.transactionBuilder = transactionBuilder
         self.transactionSigner = transactionSigner
+        self.balanceProvider = BitcoinComBalanceProvider(network: network)
     }
 
     public convenience init?(dataStore: BitcoinKitDataStoreProtocol = UserDefaults.bitcoinKit) {
@@ -101,12 +103,16 @@ final public class Wallet {
         return cache
     }
 
-    public func reloadBalance(completion: (([UnspentTransaction]) -> Void)? = nil) {
-        utxoProvider.reload(addresses: addresses(), completion: completion)
+    public func reloadBalance(completion: ((UInt64) -> Void)? = nil) {
+        balanceProvider.reload(address: address, completion: completion)
     }
-
+    
+//    public func reloadBalance(completion: (([UnspentTransaction]) -> Void)? = nil) {
+//        utxoProvider.reload(addresses: addresses(), completion: completion)
+//    }
+    
     public func balance() -> UInt64 {
-        return utxoProvider.cached.sum()
+        return balanceProvider.balance
     }
 
     public func utxos() -> [UnspentTransaction] {

@@ -84,15 +84,6 @@ public final class BitcoinComTransactionBroadcaster: TransactionBroadcaster {
                 completion?(nil)
                 return
             }
-
-//            print (String(data: data, encoding: .utf8))
-//            var r2: BitcoinComResponseModel? = nil
-//            do {
-//                r2 = try JSONDecoder().decode(BitcoinComResponseModel.self, from: data)
-//            } catch {
-//                print(error)
-//                print("was error");
-//            }
             guard let r2 = try? JSONDecoder().decode(BitcoinComResponseModel.self, from: data) else {
                 print("data cannot be decoded to response")
                 return
@@ -114,8 +105,6 @@ public final class BitcoinComTransactionBroadcaster: TransactionBroadcaster {
     private func sendSignedTx(signed: Data, response: BitcoinComResponseModel, publicKey: PublicKey, completion: ((_ txid: String?) -> Void)?){
         if var response = response as? BitcoinComResponseModel {
             response.populate(signatures: [signed.hex], pubkeys: [publicKey.data.hex]);
-//            response.populate(signatures: ["30440220338e1042ace14c4451b035a5bcf6b3f6bc8620a42d4bfcb2f4ed033f27fa251702200a7b355e46abd1e4eb4329eeb8b159f4d291c30ca1095b4455ded9512e43851b"], pubkeys: [publicKey.data.hex]);
-//
         
             var encoded: Data? = nil
             do {
@@ -154,12 +143,18 @@ public final class BitcoinComTransactionBroadcaster: TransactionBroadcaster {
                     completion?(nil)
                     return
                 }
-                
-                guard let r2 = String(bytes: data, encoding: .utf8) else {
-                    print("broadcast response cannot be decoded.")
+  
+                guard let r2 = try? JSONDecoder().decode(BitcoinComResponseModel.self, from: data) else {
+                    print("data cannot be decoded to response")
                     return
                 }
-                print(r2)
+                
+                print(r2);
+//                guard let r2 = String(bytes: data, encoding: .utf8) else {
+//                    print("broadcast response cannot be decoded.")
+//                    return
+//                }
+//                print(r2)
             }
             task.resume();
 //            if let encodedData = encoded {
