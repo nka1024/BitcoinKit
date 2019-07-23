@@ -37,7 +37,7 @@ public struct StandardTransactionSigner: TransactionSigner {
 
         // Sign
         signingInputs = unsignedTransaction.tx.inputs
-        let hashType = SighashType.BCH.ALL
+        let hashType = SighashType.BTC.ALL
         for (i, utxo) in unsignedTransaction.utxos.enumerated() {
             // Select key
             let pubkeyHash: Data = Script.getPublicKeyHash(from: utxo.output.lockingScript)
@@ -48,7 +48,7 @@ public struct StandardTransactionSigner: TransactionSigner {
             }
 
             // Sign transaction hash
-            let sighash: Data = signingTransaction.signatureHash(for: utxo.output, inputIndex: i, hashType: SighashType.BCH.ALL)
+            let sighash: Data = signingTransaction.signatureHash(for: utxo.output, inputIndex: i, hashType: SighashType.BTC.ALL)
             let signature: Data = try Crypto.sign(sighash, privateKey: key)
             let txin = signingInputs[i]
             let pubkey = key.publicKey()

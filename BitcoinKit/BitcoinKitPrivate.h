@@ -59,6 +59,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface _Crypto : NSObject
 + (NSData *)signMessage:(NSData *)message withPrivateKey:(NSData *)privateKey;
++ (NSData *)sign2:(NSData *)message withPrivateKey:(NSData *)privateKey;
 + (BOOL)verifySignature:(NSData *)signature message:(NSData *)message  publicKey:(NSData *)publicKey;
 @end
 NS_ASSUME_NONNULL_END

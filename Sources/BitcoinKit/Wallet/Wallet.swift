@@ -122,16 +122,30 @@ final public class Wallet {
     }
 
     public func send(to toAddress: Address, amount: UInt64, completion: ((_ txid: String?) -> Void)? = nil) throws {
-        let utxos = utxoProvider.cached
-        let (utxosToSpend, fee) = try utxoSelector.select(from: utxos, targetValue: amount)
-        let totalAmount: UInt64 = utxosToSpend.sum()
-        let change: UInt64 = totalAmount - amount - fee
-        let destinations: [(Address, UInt64)] = [(toAddress, amount), (address, change)]
-        let unsignedTx = try transactionBuilder.build(destinations: destinations, utxos: utxosToSpend)
-        let signedTx = try transactionSigner.sign(unsignedTx, with: [privateKey])
+        transactionBroadcaster.txNew1(to: toAddress, from: address, amount: amount, privateKey: privateKey, publicKey: publicKey) { (result) in
 
-        let rawtx = signedTx.serialized().hex
-        transactionBroadcaster.post(rawtx, completion: completion)
+        }
+//        let utxos = utxoProvider.cached
+//        let (utxosToSpend, fee) = try utxoSelector.select(from: utxos, targetValue: amount)
+//        let totalAmount: UInt64 = utxosToSpend.sum()
+//        let change: UInt64 = totalAmount - amount - fee
+//        let destinations: [(Address, UInt64)] = [(toAddress, amount), (address, change)]
+//        let unsignedTx = try transactionBuilder.build(destinations: destinations, utxos: utxosToSpend)
+//        let signedTx = try transactionSigner.sign(unsignedTx, with: [privateKey])
+//
+//        let rawtx = signedTx.serialized().hex
+//        transactionBroadcaster.post(rawtx, completion: completion)
+        
+//        let utxos = utxoProvider.cached
+//        let (utxosToSpend, fee) = try utxoSelector.select(from: utxos, targetValue: amount)
+//        let totalAmount: UInt64 = utxosToSpend.sum()
+//        let change: UInt64 = totalAmount - amount - fee
+//        let destinations: [(Address, UInt64)] = [(toAddress, amount), (address, change)]
+//        let unsignedTx = try transactionBuilder.build(destinations: destinations, utxos: utxosToSpend)
+//        let signedTx = try transactionSigner.sign(unsignedTx, with: [privateKey])
+//
+//        let rawtx = signedTx.serialized().hex
+//        transactionBroadcaster.post(rawtx, completion: completion)
     }
 }
 

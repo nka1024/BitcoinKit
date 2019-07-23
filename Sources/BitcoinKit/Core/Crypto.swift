@@ -63,6 +63,14 @@ public struct Crypto {
         #endif
     }
 
+    public static func sign2(_ data: Data, privateKey: PrivateKey) throws -> Data {
+        #if BitcoinKitXcode
+        return _Crypto.sign2(data, withPrivateKey: Data( hex: privateKey.data.hex)!)
+        #else
+        return try _Crypto.sign2(data, withPrivateKey: privateKey.data)
+        #endif
+    }
+
     public static func verifySignature(_ signature: Data, message: Data, publicKey: Data) throws -> Bool {
         #if BitcoinKitXcode
         return _Crypto.verifySignature(signature, message: message, publicKey: publicKey)

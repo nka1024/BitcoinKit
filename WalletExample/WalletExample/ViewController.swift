@@ -37,6 +37,7 @@ class ViewController: UIViewController {
         super.viewDidLoad()
         self.createWalletIfNeeded()
         self.updateLabels()
+        destinationAddressTextField.text = "mjaZSjVVKbBMRUXtNLxzu88zHLxLfXpvL9"
     }
     
     func createWalletIfNeeded() {

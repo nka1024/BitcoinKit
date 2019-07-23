@@ -57,9 +57,21 @@ public struct ApiEndPoint {
         }
 
         public func postRawtxURL(rawtx: String) -> URL {
-            let url = baseUrl + "rawtransactions/sendRawTransaction/\(rawtx)"
+            let url = baseUrl + "txs/push"
             return ApiEndPoint.convert(string: url)!
         }
+        
+        public func postTxNew1() -> URL {
+            let url = baseUrl + "txs/new"
+            return ApiEndPoint.convert(string: url)!
+        }
+        
+        public func postTxSend1() -> URL {
+            let url = baseUrl + "txs/send"
+            return ApiEndPoint.convert(string: url)!
+        }
+        
+        
     }
     public static func convert(string: String) -> URL? {
         guard let encoded = string.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) else {
