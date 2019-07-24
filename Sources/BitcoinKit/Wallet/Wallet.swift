@@ -129,7 +129,9 @@ final public class Wallet {
 
     public func send(to toAddress: Address, amount: UInt64, completion: ((_ txid: String?) -> Void)? = nil) throws {
         transactionBroadcaster.txNew1(to: toAddress, from: address, amount: amount, privateKey: privateKey, publicKey: publicKey) { (result) in
-
+            DispatchQueue.main.async {
+                completion?(result)
+            }
         }
 //        let utxos = utxoProvider.cached
 //        let (utxosToSpend, fee) = try utxoSelector.select(from: utxos, targetValue: amount)

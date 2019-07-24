@@ -49,6 +49,7 @@ public final class BitcoinComTransactionBroadcaster: TransactionBroadcaster {
             }
             guard let response = String(bytes: data, encoding: .utf8) else {
                 print("broadcast response cannot be decoded.")
+                completion?(nil)
                 return
             }
         
@@ -84,33 +85,46 @@ public final class BitcoinComTransactionBroadcaster: TransactionBroadcaster {
                 completion?(nil)
                 return
             }
+            
+            print("----------")
+            print("\(String(data: data, encoding: .utf8))")
+            print("----------")
+            
             guard let r2 = try? JSONDecoder().decode(BitcoinComResponseModel.self, from: data) else {
                 print("data cannot be decoded to response")
+                completion?(nil)
                 return
             }
-            let hxs = Data(hex: r2.tosign.first!);
-            if  let tosignData = hxs,//r2.tosign.first?.data(using: .utf8),
-                let signed = try? Crypto.sign2(tosignData, privateKey: privateKey) {
-                print(hxs)
-                print(privateKey)
-                print(privateKey.data.hex)
-                self.sendSignedTx(signed: signed, response: r2, publicKey: publicKey, completion: completion)
-            } else {
-                completion?(nil);
+            var signatures = [String]()
+            var publicKeys = [String]()
+            for tosign in r2.tosign {
+                let hxs = Data(hex: tosign);
+                if  let tosignData = hxs,
+                    let signed = try? Crypto.sign2(tosignData, privateKey: privateKey) {
+                    print(privateKey)
+                    print(privateKey.data.hex)
+                    signatures.append(signed.hex)
+                    publicKeys.append(publicKey.data.hex)
+                    
+                } else {
+                    completion?(nil);
+                }
             }
+            self.sendSignedTx(signatures: signatures, publicKeys: publicKeys, response: r2, completion: completion)
         }
         task.resume()
     }
     
-    private func sendSignedTx(signed: Data, response: BitcoinComResponseModel, publicKey: PublicKey, completion: ((_ txid: String?) -> Void)?){
+    private func sendSignedTx(signatures: [String], publicKeys: [String], response: BitcoinComResponseModel, completion: ((_ txid: String?) -> Void)?){
         if var response = response as? BitcoinComResponseModel {
-            response.populate(signatures: [signed.hex], pubkeys: [publicKey.data.hex]);
+            response.populate(signatures: signatures, pubkeys: publicKeys);
         
             var encoded: Data? = nil
             do {
                 encoded = try JSONEncoder().encode(response)
             } catch {
-                print(error);
+                completion?(nil)
+                print(error)
             }
 
             let url = endpoint.postTxSend1()
@@ -143,9 +157,17 @@ public final class BitcoinComTransactionBroadcaster: TransactionBroadcaster {
                     completion?(nil)
                     return
                 }
-  
+                print("============")
+                print("\(String(data: data, encoding: .utf8))")
+                print("============")
+                do {
+                    let rr2 = try JSONDecoder().decode(BitcoinComResponseModel.self, from: data)
+                } catch {
+                    print("error \(error)");
+                }
                 guard let r2 = try? JSONDecoder().decode(BitcoinComResponseModel.self, from: data) else {
                     print("data cannot be decoded to response")
+                    completion?(nil)
                     return
                 }
                 
