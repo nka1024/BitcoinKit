@@ -26,8 +26,8 @@ import Foundation
 
 public protocol TransactionHistoryProvider {
     // Reload transactions [GET API, SPV, etc...]
-    func reload(addresses: [Address], completion: (([Transaction]) -> Void)?)
+    func reload(address: Address, completion: (([BitcoinKitTransaction]) -> Void)?)
 
     // List cached transactions
-    var cached: [Transaction] { get }
+    var cached: [BitcoinKitTransaction] { get }
 }

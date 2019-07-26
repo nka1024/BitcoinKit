@@ -38,6 +38,24 @@ public struct StandardTransactionBuilder: TransactionBuilder {
         let tx = Transaction(version: 1, inputs: unsignedInputs, outputs: outputs, lockTime: 0)
         return UnsignedTransaction(tx: tx, utxos: utxos)
     }
+    
+    public func buildFromQR(qrtx: QRAPITransaction) throws -> UnsignedTransaction {
+
+        let outputs = qrtx.outputs.map({ o in
+            return TransactionOutput(value: o.value, lockingScript: Data(hex: o.locking_script)!)
+        })
+
+        let unsignedInputs = qrtx.inputs.map({i -> TransactionInput in
+            let outpoint = TransactionOutPoint(hash: Data(hex: i.prev_hash)!, index: i.output_index)
+            return TransactionInput(previousOutput: outpoint, signatureScript: Data(), sequence: UInt32(i.sequence))
+        })
+        let utxos = qrtx.inputs.map({ i -> UnspentTransaction in
+            let output = TransactionOutput(value: i.va, lockingScript: <#T##Data#>)
+            return UnspentTransaction(output: <#T##TransactionOutput#>, outpoint: <#T##TransactionOutPoint#>)
+        })
+        let tx = Transaction(version: 1, inputs: unsignedInputs, outputs: outputs, lockTime: 0)
+        return UnsignedTransaction(tx: tx, utxos: utxos);
+    }
 }
 
 enum TransactionBuildError: Error {

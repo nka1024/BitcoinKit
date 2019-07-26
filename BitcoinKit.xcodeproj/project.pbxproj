@@ -217,6 +217,7 @@
 		CFA290702101CDCA001A1BAB /* ScriptTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = CFA2906F2101CDCA001A1BAB /* ScriptTests.swift */; };
 		CFA290722102B635001A1BAB /* ScriptMachine.swift in Sources */ = {isa = PBXBuildFile; fileRef = CFA290712102B635001A1BAB /* ScriptMachine.swift */; };
 		CFA290742102B650001A1BAB /* ScriptMachineTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = CFA290732102B650001A1BAB /* ScriptMachineTests.swift */; };
+		DF74532222E8BAA7001720DC /* BitcoinKitTransaction.swift in Sources */ = {isa = PBXBuildFile; fileRef = DF74532122E8BAA7001720DC /* BitcoinKitTransaction.swift */; };
 		DF9D29A422E77194000F75B2 /* BitcoinComBalanceProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = DF9D29A322E77193000F75B2 /* BitcoinComBalanceProvider.swift */; };
 /* End PBXBuildFile section */
 
@@ -446,6 +447,7 @@
 		CFA2906F2101CDCA001A1BAB /* ScriptTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScriptTests.swift; sourceTree = "<group>"; };
 		CFA290712102B635001A1BAB /* ScriptMachine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScriptMachine.swift; sourceTree = "<group>"; };
 		CFA290732102B650001A1BAB /* ScriptMachineTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScriptMachineTests.swift; sourceTree = "<group>"; };
+		DF74532122E8BAA7001720DC /* BitcoinKitTransaction.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BitcoinKitTransaction.swift; sourceTree = "<group>"; };
 		DF9D29A322E77193000F75B2 /* BitcoinComBalanceProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BitcoinComBalanceProvider.swift; sourceTree = "<group>"; };
 		DF9F8EB322AA65D6008C6842 /* BitcoinKit.private.modulemap */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.module-map"; name = BitcoinKit.private.modulemap; path = BitcoinKit/BitcoinKit.private.modulemap; sourceTree = SOURCE_ROOT; };
 /* End PBXFileReference section */
@@ -852,6 +854,7 @@
 				298E17BD2150983C00FF6C77 /* BitcoinComTransactionHistoryProvider.swift */,
 				298E17BF21509DC200FF6C77 /* BitcoinComTransactionBroadcaster.swift */,
 				DF9D29A322E77193000F75B2 /* BitcoinComBalanceProvider.swift */,
+				DF74532122E8BAA7001720DC /* BitcoinKitTransaction.swift */,
 			);
 			path = BitcoinCom;
 			sourceTree = "<group>";
@@ -1141,6 +1144,7 @@
 				14CDC38C2021EF5000C01556 /* Helpers.swift in Sources */,
 				1419E83B202CDBE500FCB0BE /* BitcoinKitPrivate.m in Sources */,
 				0C1DD40C21181A40004BA8A8 /* OP_LESSTHAN.swift in Sources */,
+				DF74532222E8BAA7001720DC /* BitcoinKitTransaction.swift in Sources */,
 				298E17C021509DC200FF6C77 /* BitcoinComTransactionBroadcaster.swift in Sources */,
 				147494F0201FAE30006D1CF8 /* Serialization.swift in Sources */,
 				147494E4201F9B85006D1CF8 /* Crypto.swift in Sources */,

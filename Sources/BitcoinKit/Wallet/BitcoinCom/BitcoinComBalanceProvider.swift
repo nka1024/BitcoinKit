@@ -10,11 +10,20 @@ import Foundation
 
 final public class BitcoinComBalanceProvider {
     private let endpoint: ApiEndPoint.BitcoinCom
-
-    public var balance: UInt64
-    public init(network: Network) {
+    private let dataStore: BitcoinKitDataStoreProtocol
+    
+    public var balance: UInt64 {
+        if let cached = dataStore.getString(forKey: "balance") {
+            return UInt64(cached)!
+        }
+        else {
+            return 0
+        }
+    }
+    
+    public init(network: Network, dataStore: BitcoinKitDataStoreProtocol) {
         self.endpoint = ApiEndPoint.BitcoinCom(network: network)
-        self.balance = 0
+        self.dataStore = dataStore
     }
     
     // GET API: reload balance
@@ -37,13 +46,12 @@ final public class BitcoinComBalanceProvider {
             }
             
             if let r2 = r2 {
-                self?.balance = r2.balance
+                self?.dataStore.setString(String(r2.balance), forKey: "balance")
                 completion?(r2.balance)
             }
         }
         task.resume()
     }
-
 }
 
 // MARK: - GET Unspent Transaction Outputs

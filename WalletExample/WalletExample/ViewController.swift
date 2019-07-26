@@ -31,7 +31,7 @@ class ViewController: UIViewController {
     @IBOutlet private weak var balanceLabel: UILabel!
     @IBOutlet private weak var destinationAddressTextField: UITextField!
     
-    private var wallet: Wallet?  = Wallet()
+    private var wallet: Wallet?
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -42,9 +42,16 @@ class ViewController: UIViewController {
     
     func createWalletIfNeeded() {
         if wallet == nil {
-            let privateKey = PrivateKey(network: .testnetBTC)
-            wallet = Wallet(privateKey: privateKey)
-            wallet?.save()
+            let userDefaults = UserDefaults.init()
+            if let wif = userDefaults.getString(forKey: "wif"),
+                let privateKey = try? PrivateKey(wif: wif) {
+                wallet = Wallet(privateKey: privateKey)
+            } else {
+                let privateKey = PrivateKey(network: .testnetBTC)
+                userDefaults.setString(privateKey.toWIF(), forKey: "wif")
+                wallet = Wallet(privateKey: privateKey)
+//                wallet?.save()
+            }
         }
     }
     
@@ -61,8 +68,13 @@ class ViewController: UIViewController {
     }
     
     func updateBalance() {
-        wallet?.reloadBalance(completion: { [weak self] (balance) in
-            DispatchQueue.main.async { self?.updateLabels() }
+//        wallet?.reloadBalance(completion: { [weak self] (balance) in
+//            DispatchQueue.main.async { self?.updateLabels() }
+//        })
+        wallet?.reloadTransactions(completion: { (txs) in
+            for tx in txs {
+                print("\(tx.value)")
+            }
         })
     }
 

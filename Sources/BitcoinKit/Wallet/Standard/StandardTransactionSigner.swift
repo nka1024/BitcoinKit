@@ -47,7 +47,7 @@ public struct StandardTransactionSigner: TransactionSigner {
                 continue
             }
 
-            // Sign transaction hash
+            // Sign transaction hash-
             let sighash: Data = signingTransaction.signatureHash(for: utxo.output, inputIndex: i, hashType: SighashType.BTC.ALL)
             let signature: Data = try Crypto.sign(sighash, privateKey: key)
             let txin = signingInputs[i]
