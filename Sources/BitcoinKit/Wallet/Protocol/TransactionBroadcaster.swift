@@ -27,4 +27,5 @@ import Foundation
 public protocol TransactionBroadcaster {
     func post(_ rawtx: String, completion: ((_ txid: String?) -> Void)?)
     func txNew1(to toAddress: Address, from: Address, amount: UInt64, privateKey: PrivateKey, publicKey: PublicKey, completion: ((_ txid: String?) -> Void)?)
+    func signHash(hashes: [String], privateKey: PrivateKey, publicKey: PublicKey) -> (signatures: [String], publicKeys: [String])?
 }

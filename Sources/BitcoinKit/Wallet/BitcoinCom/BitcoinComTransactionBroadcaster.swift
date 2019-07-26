@@ -95,24 +95,32 @@ public final class BitcoinComTransactionBroadcaster: TransactionBroadcaster {
                 completion?(nil)
                 return
             }
-            var signatures = [String]()
-            var publicKeys = [String]()
-            for tosign in r2.tosign {
-                let hxs = Data(hex: tosign);
-                if  let tosignData = hxs,
-                    let signed = try? Crypto.sign2(tosignData, privateKey: privateKey) {
-                    print(privateKey)
-                    print(privateKey.data.hex)
-                    signatures.append(signed.hex)
-                    publicKeys.append(publicKey.data.hex)
-                    
-                } else {
-                    completion?(nil);
-                }
+            
+            if let signed = self.signHash(hashes: r2.tosign, privateKey: privateKey, publicKey: publicKey) {
+                self.sendSignedTx(signatures: signed.signatures, publicKeys: signed.publicKeys, response: r2, completion: completion)
+            } else {
+                completion?(nil)
             }
-            self.sendSignedTx(signatures: signatures, publicKeys: publicKeys, response: r2, completion: completion)
         }
         task.resume()
+    }
+    
+    public func signHash(hashes: [String], privateKey: PrivateKey, publicKey: PublicKey) -> (signatures: [String], publicKeys: [String])?{
+        var signatures = [String]()
+        var publicKeys = [String]()
+        for tosign in hashes {
+            let hxs = Data(hex: tosign);
+            if  let tosignData = hxs,
+                let signed = try? Crypto.sign2(tosignData, privateKey: privateKey) {
+                print(privateKey)
+                print(privateKey.data.hex)
+                signatures.append(signed.hex)
+                publicKeys.append(publicKey.data.hex)
+            } else {
+                return nil
+            }
+        }
+        return (signatures: signatures, publicKeys: publicKeys)
     }
     
     private func sendSignedTx(signatures: [String], publicKeys: [String], response: BitcoinComResponseModel, completion: ((_ txid: String?) -> Void)?){
