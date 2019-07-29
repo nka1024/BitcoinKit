@@ -35,10 +35,11 @@ final public class BitcoinComBalanceProvider {
                 completion?(0)
                 return
             }
-
+            
             var r2: BitcoinComAddressModel? = nil
             do {
                 r2 = try JSONDecoder().decode(BitcoinComAddressModel.self, from: data)
+//                r2 = try JSONDecoder().decode(BitcoinComAddressModel.self, from: d2!)
             } catch {
                 print("error: \(error)")
                 completion?(0)

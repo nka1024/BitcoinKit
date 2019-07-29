@@ -46,10 +46,20 @@ class ViewController: UIViewController {
             if let wif = userDefaults.getString(forKey: "wif"),
                 let privateKey = try? PrivateKey(wif: wif) {
                 wallet = Wallet(privateKey: privateKey)
+                
             } else {
-                let privateKey = PrivateKey(network: .testnetBTC)
+//                let privateKey = PrivateKey(network: .mainnetBTC)
+                let words = ["gift", "pull", "daughter", "heavy", "outer", "damage", "timber", "tooth", "such", "fortune", "gift", "pitch"]
+                
+                
+                let seed = Mnemonic.seed(mnemonic: words)
+                let hdKey = HDPrivateKey(seed: seed, network: .mainnetBTC)
+                let privateKey: PrivateKey = hdKey.privateKey()
+//                let privateKey = PrivateKey(data: seed, network: .mainnetBTC)
                 userDefaults.setString(privateKey.toWIF(), forKey: "wif")
+                
                 wallet = Wallet(privateKey: privateKey)
+                
 //                wallet?.save()
             }
         }
@@ -68,14 +78,14 @@ class ViewController: UIViewController {
     }
     
     func updateBalance() {
-//        wallet?.reloadBalance(completion: { [weak self] (balance) in
-//            DispatchQueue.main.async { self?.updateLabels() }
-//        })
-        wallet?.reloadTransactions(completion: { (txs) in
-            for tx in txs {
-                print("\(tx.value)")
-            }
+        wallet?.reloadBalance(completion: { [weak self] (balance) in
+            DispatchQueue.main.async { self?.updateLabels() }
         })
+//        wallet?.reloadTransactions(completion: { (txs) in
+//            for tx in txs {
+//                print("\(tx.value)")
+//            }
+//        })
     }
 
     @IBAction func didTapReloadBalanceButton(_ sender: UIButton) {

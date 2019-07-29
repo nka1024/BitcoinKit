@@ -31,7 +31,7 @@ public struct ApiEndPoint {
         init(network: Network) {
             switch network {
             case .mainnet:
-                self.baseUrl = "https://api.blockcypher.com/v1/btc/main"
+                self.baseUrl = "https://api.blockcypher.com/v1/btc/main/"
             case .testnet:
                 self.baseUrl = "https://api.blockcypher.com/v1/btc/test3/"
             default:

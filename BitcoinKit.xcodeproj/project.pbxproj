@@ -219,6 +219,7 @@
 		CFA290742102B650001A1BAB /* ScriptMachineTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = CFA290732102B650001A1BAB /* ScriptMachineTests.swift */; };
 		DF74532222E8BAA7001720DC /* BitcoinKitTransaction.swift in Sources */ = {isa = PBXBuildFile; fileRef = DF74532122E8BAA7001720DC /* BitcoinKitTransaction.swift */; };
 		DF9D29A422E77194000F75B2 /* BitcoinComBalanceProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = DF9D29A322E77193000F75B2 /* BitcoinComBalanceProvider.swift */; };
+		DFC56D2D22EF3D2B00407738 /* BlockchainRatesProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = DFC56D2C22EF3D2B00407738 /* BlockchainRatesProvider.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -450,6 +451,7 @@
 		DF74532122E8BAA7001720DC /* BitcoinKitTransaction.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BitcoinKitTransaction.swift; sourceTree = "<group>"; };
 		DF9D29A322E77193000F75B2 /* BitcoinComBalanceProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BitcoinComBalanceProvider.swift; sourceTree = "<group>"; };
 		DF9F8EB322AA65D6008C6842 /* BitcoinKit.private.modulemap */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.module-map"; name = BitcoinKit.private.modulemap; path = BitcoinKit/BitcoinKit.private.modulemap; sourceTree = SOURCE_ROOT; };
+		DFC56D2C22EF3D2B00407738 /* BlockchainRatesProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BlockchainRatesProvider.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -797,6 +799,7 @@
 			children = (
 				14CDC3852021824200C01556 /* Wallet.swift */,
 				14A2961E2032317B00E19177 /* HDWallet.swift */,
+				DFC56D2C22EF3D2B00407738 /* BlockchainRatesProvider.swift */,
 				29330151214FDC880028946B /* UserDefaults+BitcoinKitDataStoreProtocol.swift */,
 				298E17C92150AE9700FF6C77 /* Standard */,
 				298E17B8215096FA00FF6C77 /* BitcoinCom */,
@@ -1141,6 +1144,7 @@
 				29089F0C2122B9CD00E0C305 /* MockHelper.swift in Sources */,
 				14839AAD202FE80400A6CB34 /* ServiceFlags.swift in Sources */,
 				14839A89202FE63400A6CB34 /* InventoryItem.swift in Sources */,
+				DFC56D2D22EF3D2B00407738 /* BlockchainRatesProvider.swift in Sources */,
 				14CDC38C2021EF5000C01556 /* Helpers.swift in Sources */,
 				1419E83B202CDBE500FCB0BE /* BitcoinKitPrivate.m in Sources */,
 				0C1DD40C21181A40004BA8A8 /* OP_LESSTHAN.swift in Sources */,

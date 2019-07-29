@@ -138,20 +138,7 @@ public final class BitcoinComTransactionBroadcaster: TransactionBroadcaster {
             let url = endpoint.postTxSend1()
             
             var request = URLRequest(url: url)
-            
-//            let json: [String: Any] = [
-//                "inputs": [
-//                    ["addresses": [toAddress.base58]]
-//                ],
-//                "outputs": [
-//                    ["addresses": [from.base58],
-//                     "value": amount ]
-//                ]
-//            ]
-//            //        let json: [String: Any] = ["tx": rawtx ]
-//
-//            let jsonData = try? JSONSerialization.data(withJSONObject: json)
-//
+         
             request.httpMethod = "POST"
             request.httpBody = encoded
             

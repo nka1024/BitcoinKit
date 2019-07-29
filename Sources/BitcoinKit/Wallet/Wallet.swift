@@ -43,6 +43,7 @@ final public class Wallet {
     private let transactionBuilder: TransactionBuilder
     private let transactionSigner: TransactionSigner
     private let balanceProvider: BitcoinComBalanceProvider
+    private let ratesProvider: BlockchainRatesProvider
     
     public init(privateKey: PrivateKey,
                 addressProvider: AddressProvider? = nil,
@@ -73,6 +74,10 @@ final public class Wallet {
         self.transactionBuilder = transactionBuilder
         self.transactionSigner = transactionSigner
         self.balanceProvider = BitcoinComBalanceProvider(network: network, dataStore: userDefaults)
+        self.ratesProvider = BlockchainRatesProvider(dataStore: userDefaults)
+        self.ratesProvider.reload(address: address) { (rateUSD) in
+            print("rateUSD: \(rateUSD)")
+        }
     }
 
     public convenience init?(wif: String) {
@@ -99,10 +104,18 @@ final public class Wallet {
         balanceProvider.reload(address: address, completion: completion)
     }
     
+    public func reloadRates(completion: ((Double) -> Void)? = nil) {
+        ratesProvider.reload(address: address, completion: completion)
+    }
+    
 //    public func reloadBalance(completion: (([UnspentTransaction]) -> Void)? = nil) {
 //        utxoProvider.reload(addresses: addresses(), completion: completion)
 //    }
     
+    public func rateUSD() -> Double {
+        return ratesProvider.rateUSD
+    }
+
     public func balance() -> UInt64 {
         return balanceProvider.balance
     }
@@ -142,8 +155,8 @@ final public class Wallet {
 //        transactionBroadcaster.post(rawtx, completion: completion)
     }
     
-    public func signHash(txHash: String) throws -> (signatures: [String], publicKeys: [String])? {
-        return transactionBroadcaster.signHash(hashes: [txHash], privateKey: privateKey, publicKey: publicKey)
+    public func signHash(txHash: [String]) throws -> (signatures: [String], publicKeys: [String])? {
+        return transactionBroadcaster.signHash(hashes: txHash, privateKey: privateKey, publicKey: publicKey)
     }
 }
 
