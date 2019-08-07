@@ -25,8 +25,8 @@
 import Foundation
 
 extension UserDefaults: BitcoinKitDataStoreProtocol {
-    public static var bitcoinKit: UserDefaults {
-        return UserDefaults(suiteName: "BitcoinKit")!
+    public static func bitcoinKit(walletId: String) -> UserDefaults {
+        return UserDefaults(suiteName: "BitcoinKit\(walletId)")!
     }
     public func getString(forKey key: String) -> String? {
         return string(forKey: key)

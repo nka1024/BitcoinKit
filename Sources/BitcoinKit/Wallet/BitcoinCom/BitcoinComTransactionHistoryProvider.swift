@@ -25,34 +25,78 @@
 import Foundation
 
 final public class BitcoinComTransactionHistoryProvider: TransactionHistoryProvider {
-    private let endpoint: ApiEndPoint.BitcoinCom
+    private let endpoint: BitcoinComEndPoint
     private let dataStore: BitcoinKitDataStoreProtocol
     public init(network: Network, dataStore: BitcoinKitDataStoreProtocol) {
-        self.endpoint = ApiEndPoint.BitcoinCom(network: network)
+        self.endpoint = BitcoinComEndPoint(network: network)
         self.dataStore = dataStore
     }
 
     // Reload transactions [GET API]
-    public func reload(addresses: [Address], completion: (([Transaction]) -> Void)?) {
-        let url = endpoint.getTransactionHistoryURL(with: addresses)
-        let task = URLSession.shared.dataTask(with: url) { [weak self] data, _, _ in
+    public func reload(address: Address, completion: (([BitcoinKitTransaction]) -> Void)?) {
+        let url = endpoint.getTransactionHistoryURL(with: address)
+        print(url)
+        let task = URLSession.shared.dataTask(with: url) { [weak self] data, res, err in
             guard let data = data else {
                 completion?([])
+                print("data = nil in BitcoinComTransactionResponse")
                 return
             }
-            guard let response = try? JSONDecoder().decode([[BitcoinComTransaction]].self, from: data) else {
+            do  {
+                let response = try JSONDecoder().decode(BitcoinComTransactionResponse.self, from: data)
+            } catch {
+                print(error);
+            }
+            guard let response = try? JSONDecoder().decode(BitcoinComTransactionResponse.self, from: data) else {
+                print("failed to decode BitcoinComTransactionResponse")
                 completion?([])
                 return
             }
             self?.dataStore.setData(data, forKey: .transactions)
-            completion?(response.joined().asTransactions())
+            completion?(response.txs.asBTCTransactions(address: response.legacyAddress))
+        }
+        
+        task.resume()
+    }
+    
+    
+    public func reload(address: Address, completion: (([Transaction]) -> Void)?) {
+        let url = endpoint.getTransactionHistoryURL(with: address)
+        
+        let task = URLSession.shared.dataTask(with: url) { [weak self] data, _, _ in
+            guard let data = data else {
+                print("data = nil in BitcoinComTransactionResponse")
+                completion?([])
+                return
+            }
+            guard let response = try? JSONDecoder().decode(BitcoinComTransactionResponse.self, from: data) else {
+                print("failed to decode BitcoinComTransactionResponse")
+                completion?([])
+                return
+            }
+            self?.dataStore.setData(data, forKey: .transactions)
+            completion?(response.txs.asTransactions())
         }
 
         task.resume()
     }
 
+    public var cached: [BitcoinKitTransaction] {
+        guard let data = dataStore.getData(forKey: .transactions) else {
+            print("data is  nil")
+            return []
+        }
+        
+        guard let response = try? JSONDecoder().decode(BitcoinComTransactionResponse.self, from: data) else {
+            print("data cannot be decoded to BitcoinComTransactionResponse")
+            return []
+        }
+        return response.txs.asBTCTransactions(address: response.legacyAddress)
+        
+    }
+    
     // List cached transactions
-    public var cached: [Transaction] {
+    private var cachedTx: [Transaction] {
         guard let data = dataStore.getData(forKey: .transactions) else {
             print("data is  nil")
             return []
@@ -70,6 +114,19 @@ private extension Sequence where Element == BitcoinComTransaction {
     func asTransactions() -> [Transaction] {
         return compactMap { $0.asTransaction() }
     }
+    
+    func asBTCTransactions(address: String) -> [BitcoinKitTransaction] {
+        return compactMap { $0.asBTCTransaction(address: address) }
+    }
+}
+
+
+private struct BitcoinComTransactionResponse: Codable {
+    let pagesTotal: UInt32
+    let currentPage: UInt32
+    let legacyAddress: String
+    let cashAddress: String
+    let txs: [BitcoinComTransaction]
 }
 
 // MARK: - GET Transactions
@@ -99,6 +156,51 @@ private struct BitcoinComTransaction: Codable {
         }
         return Transaction(version: version, inputs: inputs, outputs: outputs, lockTime: locktime)
     }
+    
+    func asBTCTransaction(address: String) -> BitcoinKitTransaction? {
+        // positive
+        var positive = true
+        for input in vin {
+            if address == input.addr{
+                positive = false
+                break
+            }
+        }
+        
+        
+        // value
+        var value = UInt64(0)
+        if positive {
+            var v = UInt64(0)
+            for out in vout {
+                for addr in out.scriptPubKey.addresses {
+                    if addr == address {
+                        v += UInt64((Double(out.value) ?? 0) * 100_000_000)
+//                        break
+                    }
+                }
+            }
+            value = v
+        } else {
+            var v = UInt64(0)
+            for inp in vin {
+                if inp.addr != address {
+                    v += UInt64((Double(inp.value) ?? 0) * 100_000_000)
+                }
+            }
+            value = v
+        }
+        return BitcoinKitTransaction(timestamp: "",
+                                     positive: positive,
+                                     hash: txid,
+                                     from: "",
+                                     to: "",
+                                     value: value,
+                                     input: "",
+                                     contract: "",
+                                     tokenSymbol: "",
+                                     confirmations: 0)
+    }
 }
 
 private struct TxIn: Codable {
@@ -106,9 +208,9 @@ private struct TxIn: Codable {
     let vout: UInt32
     let sequence: UInt32
     let scriptSig: ScriptSig
-    // let addr: String
+    let addr: String
     // let valueSat: UInt64
-    // let value: Decimal
+     let value: Double
 
     // let n: Int
     // let doubleSpentTxID: String?
@@ -127,7 +229,7 @@ private struct ScriptSig: Codable {
 }
 
 private struct TxOut: Codable {
-    let value: Decimal
+    let value: String
     let scriptPubKey: ScriptPubKey
 
     // let type: String
@@ -138,7 +240,7 @@ private struct TxOut: Codable {
 
     func asTransactionOutput() -> TransactionOutput? {
         guard let lockingScript = Data(hex: scriptPubKey.hex) else { return nil }
-        let int64Value: UInt64 = UInt64((value * 100_000_000).doubleValue)
+        let int64Value: UInt64 = UInt64(((Double(value) ?? 0) * 100_000_000))
         return TransactionOutput(value: int64Value, lockingScript: lockingScript)
     }
 }
@@ -146,11 +248,11 @@ private struct TxOut: Codable {
 private struct ScriptPubKey: Codable {
     let hex: String
     // let asm: String
-    // let addresses: [String]
+     let addresses: [String]
 }
 
-private extension Decimal {
-    var doubleValue: Double {
-        return NSDecimalNumber(decimal: self).doubleValue
-    }
-}
+//private extension Decimal {
+//    var doubleValue: Double {
+//        return NSDecimalNumber(decimal: self).doubleValue
+//    }
+//}
