@@ -24,36 +24,52 @@
 
 import Foundation
 
-public struct BitcoinComEndPoint {
+public struct BlockcypherEndPoint {
     
     private let baseUrl: String
 
     init(network: Network) {
         switch network {
         case .mainnet:
-            self.baseUrl = "https://rest.bitcoin.com/v2/"
+            self.baseUrl = "https://api.blockcypher.com/v1/btc/main/"
         case .testnet:
-            self.baseUrl = "https://trest.bitcoin.com/v2/"
+            self.baseUrl = "https://api.blockcypher.com/v1/btc/test3/"
         default:
             fatalError("Bitcoin.com API is only available for Bitcoin Cash.")
         }
     }
 
     public func getUtxoURL(with address: Address) -> URL {
-        let parameter: String = address.cashaddr
-        let url = baseUrl + "address/utxo/\(parameter)"
-        return BitcoinComEndPoint.convert(string: url)!
+        let parameter: String = "\(address.base58)"
+        let url = baseUrl + "addrs/\(parameter)/full"
+        return BlockcypherEndPoint.convert(string: url)!
     }
 
+    public func getBalanceURL(with address: Address) -> URL {
+        let parameter: String = "\(address.base58)"
+        let url = baseUrl + "addrs/\(parameter)/?unspentOnly=true"
+        return BlockcypherEndPoint.convert(string: url)!
+    }
+    
     public func getTransactionHistoryURL(with address: Address) -> URL {
-        let parameter: String = address.cashaddr
-        let url = baseUrl + "address/transactions/\(parameter)"
-        return BitcoinComEndPoint.convert(string: url)!
+        let parameter: String = "\(address.base58)"
+        let url = baseUrl + "addrs/\(parameter)/full?txlimit=100"
+        return BlockcypherEndPoint.convert(string: url)!
     }
 
     public func postRawtxURL(rawtx: String) -> URL {
-        let url = baseUrl + "rawtransactions/sendRawTransaction/\(rawtx)"
-        return BitcoinComEndPoint.convert(string: url)!
+        let url = baseUrl + "txs/push"
+        return BlockcypherEndPoint.convert(string: url)!
+    }
+    
+    public func postTxNew1() -> URL {
+        let url = baseUrl + "txs/new"
+        return BlockcypherEndPoint.convert(string: url)!
+    }
+    
+    public func postTxSend1() -> URL {
+        let url = baseUrl + "txs/send"
+        return BlockcypherEndPoint.convert(string: url)!
     }
     
     public static func convert(string: String) -> URL? {
@@ -63,9 +79,8 @@ public struct BitcoinComEndPoint {
         return URL(string: encoded)
     }
 
-        
 }
 
-enum BitcoinComApiInitializationError: Error {
+enum BlockcypherApiInitializationError: Error {
     case invalidNetwork
 }

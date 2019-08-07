@@ -25,9 +25,9 @@
 import Foundation
 
 public final class BitcoinComTransactionBroadcaster: TransactionBroadcaster {
-    private let endpoint: ApiEndPoint.BitcoinCom
+    private let endpoint: BitcoinComEndPoint
     public init(network: Network) {
-        self.endpoint = ApiEndPoint.BitcoinCom(network: network)
+        self.endpoint = BitcoinComEndPoint(network: network)
     }
 
     public func post(_ rawtx: String, completion: ((_ txid: String?) -> Void)?) {
@@ -48,5 +48,12 @@ public final class BitcoinComTransactionBroadcaster: TransactionBroadcaster {
             completion?(response)
         }
         task.resume()
+    }
+    
+    public func txNew1(to toAddress: Address, from: Address, amount: UInt64, privateKey: PrivateKey, publicKey: PublicKey, completion: ((_ txid: String?) -> Void)?) {
+        completion?(nil)
+    }
+    public func signHash(hashes: [String], privateKey: PrivateKey, publicKey: PublicKey) -> (signatures: [String], publicKeys: [String])? {
+        return nil
     }
 }

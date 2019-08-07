@@ -25,5 +25,5 @@ let package = Package(
             dependencies: ["BitcoinKit"]
         )
     ],
-    swiftLanguageVersions: [4]
+    swiftLanguageVersions: [5]
 )

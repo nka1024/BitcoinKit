@@ -1,5 +1,5 @@
 //
-//  TransactionHistoryProvider.swift
+//  UtxoProvider.swift
 //
 //  Copyright © 2018 BitcoinKit developers
 //
@@ -24,10 +24,10 @@
 
 import Foundation
 
-public protocol TransactionHistoryProvider {
-    // Reload transactions [GET API, SPV, etc...]
-    func reload(address: Address, completion: (([BitcoinKitTransaction]) -> Void)?)
-
-    // List cached transactions
-    var cached: [BitcoinKitTransaction] { get }
+public protocol BalanceProvider {
+    // reload balance
+     func reload(address: Address, completion: ((UInt64) -> Void)?)
+    
+    // cached balance
+    var balance: UInt64 { get }
 }

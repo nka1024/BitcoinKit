@@ -1,5 +1,5 @@
 //
-//  TransactionHistoryProvider.swift
+//  SerializationTests.swift
 //
 //  Copyright © 2018 BitcoinKit developers
 //
@@ -22,12 +22,19 @@
 //  THE SOFTWARE.
 //
 
-import Foundation
+import XCTest
+@testable import BitcoinKit
 
-public protocol TransactionHistoryProvider {
-    // Reload transactions [GET API, SPV, etc...]
-    func reload(address: Address, completion: (([BitcoinKitTransaction]) -> Void)?)
+class SerializationTests: XCTestCase {
 
-    // List cached transactions
-    var cached: [BitcoinKitTransaction] { get }
+    func testDataToInt32() {
+        for _ in 0..<10 {
+            for i in 0...255 {
+                let data: Data = Data([UInt8(i)])
+                let intValue: Int32 = data.to(type: Int32.self)
+                XCTAssertEqual(intValue, Int32(i), "\(i) time")
+            }
+        }
+    }
+
 }

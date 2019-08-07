@@ -42,13 +42,16 @@ final public class Wallet {
     private let utxoSelector: UtxoSelector
     private let transactionBuilder: TransactionBuilder
     private let transactionSigner: TransactionSigner
-
+    private let balanceProvider: BalanceProvider
+    private let ratesProvider: BlockchainRatesProvider
+    private let feesProvider: BlockchainFeesProvider
+    
     public init(privateKey: PrivateKey,
-                dataStore: BitcoinKitDataStoreProtocol = UserDefaults.bitcoinKit,
                 addressProvider: AddressProvider? = nil,
                 utxoProvider: UtxoProvider? = nil,
                 transactionHistoryProvider: TransactionHistoryProvider? = nil,
                 transactionBroadcaster: TransactionBroadcaster? = nil,
+                balanceProvider: BalanceProvider? = nil,
                 utxoSelector: UtxoSelector = StandardUtxoSelector(),
                 transactionBuilder: TransactionBuilder = StandardTransactionBuilder(),
                 transactionSigner: TransactionSigner = StandardTransactionSigner()) {
@@ -57,7 +60,7 @@ final public class Wallet {
         self.publicKey = privateKey.publicKey()
         self.network = network
 
-        let userDefaults: BitcoinKitDataStoreProtocol = UserDefaults.bitcoinKit
+        let userDefaults: BitcoinKitDataStoreProtocol = UserDefaults.bitcoinKit(walletId: publicKey.data.hex)
 
         self.addressProvider = addressProvider
             ?? StandardAddressProvider(keys: [privateKey])
@@ -67,18 +70,19 @@ final public class Wallet {
             ?? BitcoinComTransactionHistoryProvider(network: network, dataStore: userDefaults)
         self.transactionBroadcaster = transactionBroadcaster
             ?? BitcoinComTransactionBroadcaster(network: network)
-
-        self.walletDataStore = dataStore
+        self.balanceProvider = balanceProvider
+            ?? BitcoinComBalanceProvider(network: network, dataStore: userDefaults)
+        
+        self.walletDataStore = userDefaults
         self.utxoSelector = utxoSelector
         self.transactionBuilder = transactionBuilder
         self.transactionSigner = transactionSigner
-    }
-
-    public convenience init?(dataStore: BitcoinKitDataStoreProtocol = UserDefaults.bitcoinKit) {
-        guard let wif = dataStore.getString(forKey: .wif), let privateKey = try? PrivateKey(wif: wif) else {
-            return nil
+        self.ratesProvider = BlockchainRatesProvider(dataStore: userDefaults)
+        
+        self.feesProvider = BlockchainFeesProvider(dataStore: userDefaults)
+        self.ratesProvider.reload(address: address) { (rateUSD) in
+            print("rateUSD: \(rateUSD)")
         }
-        self.init(privateKey: privateKey, dataStore: dataStore)
     }
 
     public convenience init?(wif: String) {
@@ -87,7 +91,25 @@ final public class Wallet {
         }
         self.init(privateKey: privateKey)
     }
-
+    
+    static public func walletBTC(privateKey: PrivateKey) -> Wallet {
+        let publicKey = privateKey.publicKey()
+        let network = privateKey.network
+        let userDefaults = UserDefaults.bitcoinKit(walletId: publicKey.data.hex)
+        
+        let wallet = Wallet(privateKey: privateKey,
+                            addressProvider: StandardAddressProvider(keys: [privateKey]),
+                            utxoProvider: BlockcypherUtxoProvider(network: network, dataStore: userDefaults),
+                            transactionHistoryProvider: BlockcypherTransactionHistoryProvider(network: network, dataStore: userDefaults),
+                            transactionBroadcaster: BlockcypherTransactionBroadcaster(network: network),
+                            balanceProvider: BlockcypherBalanceProvider(network: network, dataStore: userDefaults),
+                            utxoSelector: StandardUtxoSelector(),
+                            transactionBuilder: StandardTransactionBuilder(),
+                            transactionSigner: BlockcypherTransactionSigner());
+        
+        return wallet
+    }
+    
     public func save() {
         walletDataStore.setString(privateKey.toWIF(), forKey: .wif)
     }
@@ -101,37 +123,77 @@ final public class Wallet {
         return cache
     }
 
-    public func reloadBalance(completion: (([UnspentTransaction]) -> Void)? = nil) {
-        utxoProvider.reload(addresses: addresses(), completion: completion)
+    public func reloadBalance(completion: ((UInt64) -> Void)? = nil) {
+        balanceProvider.reload(address: address, completion: completion)
+    }
+
+    //    public func reloadBalance(completion: (([UnspentTransaction]) -> Void)? = nil) {
+    //        utxoProvider.reload(addresses: addresses(), completion: completion)
+    //    }
+    
+    public func reloadRates(completion: ((Double) -> Void)? = nil) {
+        ratesProvider.reload(address: address, completion: completion)
+    }
+    
+    public func reloadFees(completion: ((UInt64) -> Void)? = nil) {
+        feesProvider.reload(completion: {fastest, halfHour, hour in
+            completion?(fastest)
+        })
+    }
+    
+
+    
+    public var fastestFeeBTC: UInt64 {
+        get {
+            return feesProvider.feesBTC.0
+        }
+    }
+    
+    public func rateUSD() -> Double {
+        return ratesProvider.rateUSD
     }
 
     public func balance() -> UInt64 {
-        return utxoProvider.cached.sum()
+        return balanceProvider.balance
     }
 
     public func utxos() -> [UnspentTransaction] {
         return utxoProvider.cached
     }
 
-    public func transactions() -> [Transaction] {
+    public func transactions() -> [BitcoinKitTransaction] {
         return transactionHistoryProvider.cached
     }
 
-    public func reloadTransactions(completion: (([Transaction]) -> Void)? = nil) {
-        transactionHistoryProvider.reload(addresses: addresses(), completion: completion)
+    public func reloadTransactions(completion: (([BitcoinKitTransaction]) -> Void)? = nil) {
+        transactionHistoryProvider.reload(address: address, completion: completion)
     }
 
     public func send(to toAddress: Address, amount: UInt64, completion: ((_ txid: String?) -> Void)? = nil) throws {
-        let utxos = utxoProvider.cached
-        let (utxosToSpend, fee) = try utxoSelector.select(from: utxos, targetValue: amount)
-        let totalAmount: UInt64 = utxosToSpend.sum()
-        let change: UInt64 = totalAmount - amount - fee
-        let destinations: [(Address, UInt64)] = [(toAddress, amount), (address, change)]
-        let unsignedTx = try transactionBuilder.build(destinations: destinations, utxos: utxosToSpend)
-        let signedTx = try transactionSigner.sign(unsignedTx, with: [privateKey])
-
-        let rawtx = signedTx.serialized().hex
-        transactionBroadcaster.post(rawtx, completion: completion)
+        transactionBroadcaster.txNew1(to: toAddress, from: address, amount: amount, privateKey: privateKey, publicKey: publicKey) { (result) in
+            DispatchQueue.main.async {
+                completion?(result)
+            }
+            print(self.address);
+        }
+    }
+    
+    // before moving to BlockCypher api
+    public func sendOld(to toAddress: Address, amount: UInt64, completion: ((_ txid: String?) -> Void)? = nil) throws {
+//        let utxos = utxoProvider.cached
+//        let (utxosToSpend, fee) = try utxoSelector.select(from: utxos, targetValue: amount)
+//        let totalAmount: UInt64 = utxosToSpend.sum()
+//        let change: UInt64 = totalAmount - amount - fee
+//        let destinations: [(Address, UInt64)] = [(toAddress, amount), (address, change)]
+//        let unsignedTx = try transactionBuilder.build(destinations: destinations, utxos: utxosToSpend)
+//        let signedTx = try transactionSigner.sign(unsignedTx, with: [privateKey])
+//
+//        let rawtx = signedTx.serialized().hex
+//        transactionBroadcaster.post(rawtx, completion: completion)
+    }
+    
+    public func signHash(txHash: [String]) throws -> (signatures: [String], publicKeys: [String])? {
+        return transactionBroadcaster.signHash(hashes: txHash, privateKey: privateKey, publicKey: publicKey)
     }
 }
 

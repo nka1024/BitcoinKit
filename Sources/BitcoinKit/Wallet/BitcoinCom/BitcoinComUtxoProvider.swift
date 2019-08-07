@@ -25,29 +25,29 @@
 import Foundation
 
 final public class BitcoinComUtxoProvider: UtxoProvider {
-    private let endpoint: ApiEndPoint.BitcoinCom
+    private let endpoint: BitcoinComEndPoint
     private let dataStore: BitcoinKitDataStoreProtocol
     public init(network: Network, dataStore: BitcoinKitDataStoreProtocol) {
-        self.endpoint = ApiEndPoint.BitcoinCom(network: network)
+        self.endpoint = BitcoinComEndPoint(network: network)
         self.dataStore = dataStore
     }
 
     // GET API: reload utxos
-    public func reload(addresses: [Address], completion: (([UnspentTransaction]) -> Void)?) {
-        let url = endpoint.getUtxoURL(with: addresses)
+    public func reload(address: Address, completion: (([UnspentTransaction]) -> Void)?) {
+        let url = endpoint.getUtxoURL(with: address)
         let task = URLSession.shared.dataTask(with: url) { [weak self] data, _, _ in
             guard let data = data else {
                 print("data is nil.")
                 completion?([])
                 return
             }
-            guard let response = try? JSONDecoder().decode([[BitcoinComUtxoModel]].self, from: data) else {
+            guard let response = try? JSONDecoder().decode(BitcoinComUtxoResponseModel.self, from: data) else {
                 print("decode failed.")
                 completion?([])
                 return
             }
             self?.dataStore.setData(data, forKey: .utxos)
-            completion?(response.joined().asUtxos())
+            completion?(response.utxos.asUtxos(response.scriptPubKey))
         }
         task.resume()
     }
@@ -59,33 +59,38 @@ final public class BitcoinComUtxoProvider: UtxoProvider {
             return []
         }
 
-        guard let response = try? JSONDecoder().decode([[BitcoinComUtxoModel]].self, from: data) else {
+        guard let response = try? JSONDecoder().decode(BitcoinComUtxoResponseModel.self, from: data) else {
             print("data cannot be decoded to response")
             return []
         }
-        return response.joined().asUtxos()
+        return response.utxos.asUtxos(response.scriptPubKey)
     }
 }
 
 private extension Sequence where Element == BitcoinComUtxoModel {
-    func asUtxos() -> [UnspentTransaction] {
-        return compactMap { $0.asUtxo() }
+    func asUtxos(_ scriptPubKey: String) -> [UnspentTransaction] {
+        return compactMap { $0.asUtxo(scriptPubKey) }
     }
+}
+
+private struct BitcoinComUtxoResponseModel: Codable {
+    let legacyAddress: String
+    let cashAddress: String
+    let scriptPubKey: String
+    let slpAddress: String
+    let utxos: [BitcoinComUtxoModel]
 }
 
 // MARK: - GET Unspent Transaction Outputs
 private struct BitcoinComUtxoModel: Codable {
     let txid: String
     let vout: UInt32
-    let scriptPubKey: String
     let amount: Decimal
     let satoshis: UInt64
     let height: Int?
     let confirmations: Int
-    let legacyAddress: String
-    let cashAddress: String
-
-    func asUtxo() -> UnspentTransaction? {
+    
+    func asUtxo(_ scriptPubKey: String) -> UnspentTransaction? {
         guard let lockingScript = Data(hex: scriptPubKey), let txidData = Data(hex: String(txid)) else { return nil }
         let txHash: Data = Data(txidData.reversed())
         let output = TransactionOutput(value: satoshis, lockingScript: lockingScript)
@@ -93,3 +98,20 @@ private struct BitcoinComUtxoModel: Codable {
         return UnspentTransaction(output: output, outpoint: outpoint)
     }
 }
+
+//{
+//    "utxos": [
+//    {
+//    "txid": "36905521ab14eabc0c480f474325c813639a8ce003b399bf44af922cf59ba0d9",
+//    "vout": 3,
+//    "amount": 0.049,
+//    "satoshis": 4900000,
+//    "height": 594728,
+//    "confirmations": 9
+//    }
+//    ],
+//    "legacyAddress": "1oTXDesnKKGsxdEVpx74ddpnPRY3Ngro1",
+//    "cashAddress": "bitcoincash:qqyvj3w69mpmjr8592h36zct4nj3nllwhvag7hqvyn",
+//    "slpAddress": "simpleledger:qqyvj3w69mpmjr8592h36zct4nj3nllwhv3n4v4v6d",
+//    "scriptPubKey": "76a91408c945da2ec3b90cf42aaf1d0b0bace519ffeebb88ac"
+//}
