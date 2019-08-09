@@ -33,7 +33,7 @@ public final class BitcoinComTransactionBroadcaster: TransactionBroadcaster {
     public func post(_ rawtx: String, completion: ((_ txid: String?) -> Void)?) {
         let url = endpoint.postRawtxURL(rawtx: rawtx)
         var request = URLRequest(url: url)
-        request.httpMethod = "POST"
+//        request.httpMethod = "POST"
         let task = URLSession.shared.dataTask(with: request) { data, _, _ in
             guard let data = data else {
                 print("response is nil.")

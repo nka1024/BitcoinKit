@@ -42,7 +42,11 @@ class ViewController: UIViewController {
         self.createBTCWalletIfNeeded()
         self.createBCHWalletIfNeeded()
         self.updateLabels()
-        destinationAddressTextField.text = "mjaZSjVVKbBMRUXtNLxzu88zHLxLfXpvL9"
+        if isBTC {
+            destinationAddressTextField.text = "mjaZSjVVKbBMRUXtNLxzu88zHLxLfXpvL9"
+        } else {
+            destinationAddressTextField.text = "1BPFBJ2Xg5hQopo6nfqkCYcZKPo5t8Q1pL"
+        }
     }
     
     func createBTCWalletIfNeeded() {
@@ -51,12 +55,16 @@ class ViewController: UIViewController {
             if let mnemonic = userDefaults.getString(forKey: "mnemonicBtc") {
                 let words = mnemonic.split(separator: " ").map({String($0)})
                 let seed = Mnemonic.seed(mnemonic: words)
-                let privateKey: PrivateKey = PrivateKey(data: seed, network: .mainnetBTC, isPublicKeyCompressed: false)
+                let hdkey = HDPrivateKey(seed: seed, network: .mainnetBTC)
+                let privateKey = hdkey.privateKey()
+//                let privateKey: PrivateKey = PrivateKey(data: seed, network: .mainnetBTC, isPublicKeyCompressed: false)
                 walletBTC = Wallet.walletBTC(privateKey: privateKey)
             } else {
                 let words = ["gift", "pull", "daughter", "heavy", "outer", "damage", "timber", "tooth", "such", "fortune", "gift", "pitch"]
                 let seed = Mnemonic.seed(mnemonic: words)
-                let privateKey: PrivateKey = PrivateKey(data: seed, network: .mainnetBTC, isPublicKeyCompressed: false)
+//                let privateKey: PrivateKey = PrivateKey(data: seed, network: .mainnetBTC, isPublicKeyCompressed: false)
+                let hdkey = HDPrivateKey(seed: seed, network: .mainnetBTC)
+                let privateKey = hdkey.privateKey()
                 
                 let mnemonicString = words.joined(separator: " ")
                 userDefaults.set(mnemonicString, forKey: "mnemonicBtc")
@@ -71,13 +79,17 @@ class ViewController: UIViewController {
             if let mnemonic = userDefaults.getString(forKey: "mnemonicBch") {
                 let words = mnemonic.split(separator: " ").map({String($0)})
                 let seed = Mnemonic.seed(mnemonic: words)
-                let privateKey: PrivateKey = PrivateKey(data: seed, network: .mainnet, isPublicKeyCompressed: false)
+//                let privateKey: PrivateKey = PrivateKey(data: seed, network: .mainnet, isPublicKeyCompressed: false)
+                let hdkey = HDPrivateKey(seed: seed, network: .mainnet)
+                let privateKey = hdkey.privateKey()
                 walletBCH = Wallet(privateKey: privateKey)
             } else {
                 if let mnemonic = try? Mnemonic.generate() {
                     let seed = Mnemonic.seed(mnemonic: mnemonic)
                     print("bch seed: \(mnemonic)")
-                    let privateKey: PrivateKey = PrivateKey(data: seed, network: .mainnet, isPublicKeyCompressed: false)
+//                    let privateKey: PrivateKey = PrivateKey(data: seed, network: .mainnet, isPublicKeyCompressed: false)
+                    let hdkey = HDPrivateKey(seed: seed, network: .mainnet)
+                    let privateKey = hdkey.privateKey()
                     
                     let mnemonicString = mnemonic.joined(separator: " ")
                     userDefaults.setString(mnemonicString, forKey: "mnemonicBch")
@@ -154,10 +166,17 @@ class ViewController: UIViewController {
         
         do {
             let address: Address = try AddressFactory.create(addressString)
-            try walletBTC?.send(to: address, amount: 10000, completion: { [weak self] (response) in
-                print(response ?? "")
-                self?.updateBalance()
-            })
+            if isBTC {
+                try walletBTC?.send(to: address, amount: 1000, completion: { [weak self] (response) in
+                    print(response ?? "")
+                    self?.updateBalance()
+                })
+            } else {
+                try walletBCH?.sendBCH(to: address, amount: 10000, completion: { [weak self] (response) in
+                    print(response ?? "")
+                    self?.updateBalance()
+                })
+            }
         } catch {
             print(error)
         }

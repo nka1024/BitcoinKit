@@ -52,7 +52,7 @@ final public class Wallet {
                 transactionHistoryProvider: TransactionHistoryProvider? = nil,
                 transactionBroadcaster: TransactionBroadcaster? = nil,
                 balanceProvider: BalanceProvider? = nil,
-                utxoSelector: UtxoSelector = StandardUtxoSelector(),
+                utxoSelector: UtxoSelector = StandardUtxoSelector(feePerByte: 60),
                 transactionBuilder: TransactionBuilder = StandardTransactionBuilder(),
                 transactionSigner: TransactionSigner = StandardTransactionSigner()) {
         let network = privateKey.network
@@ -179,17 +179,17 @@ final public class Wallet {
     }
     
     // before moving to BlockCypher api
-    public func sendOld(to toAddress: Address, amount: UInt64, completion: ((_ txid: String?) -> Void)? = nil) throws {
-//        let utxos = utxoProvider.cached
-//        let (utxosToSpend, fee) = try utxoSelector.select(from: utxos, targetValue: amount)
-//        let totalAmount: UInt64 = utxosToSpend.sum()
-//        let change: UInt64 = totalAmount - amount - fee
-//        let destinations: [(Address, UInt64)] = [(toAddress, amount), (address, change)]
-//        let unsignedTx = try transactionBuilder.build(destinations: destinations, utxos: utxosToSpend)
-//        let signedTx = try transactionSigner.sign(unsignedTx, with: [privateKey])
-//
-//        let rawtx = signedTx.serialized().hex
-//        transactionBroadcaster.post(rawtx, completion: completion)
+    public func sendBCH(to toAddress: Address, amount: UInt64, completion: ((_ txid: String?) -> Void)? = nil) throws {
+        let utxos = utxoProvider.cached
+        let (utxosToSpend, fee) = try utxoSelector.select(from: utxos, targetValue: amount)
+        let totalAmount: UInt64 = utxosToSpend.sum()
+        let change: UInt64 = totalAmount - amount - fee
+        let destinations: [(Address, UInt64)] = [(toAddress, amount), (address, change)]
+        let unsignedTx = try transactionBuilder.build(destinations: destinations, utxos: utxosToSpend)
+        let signedTx = try transactionSigner.sign(unsignedTx, with: [privateKey])
+
+        let rawtx = signedTx.serialized().hex
+        transactionBroadcaster.post(rawtx, completion: completion)
     }
     
     public func signHash(txHash: [String]) throws -> (signatures: [String], publicKeys: [String])? {

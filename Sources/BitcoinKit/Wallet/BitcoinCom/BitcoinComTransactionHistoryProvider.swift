@@ -136,7 +136,7 @@ private struct BitcoinComTransaction: Codable {
     let locktime: UInt32
     let vin: [TxIn]
     let vout: [TxOut]
-    let blockhash: String
+//    let blockhash: String
     let blockheight: Int
     let valueOut: Decimal
     let size: Int
