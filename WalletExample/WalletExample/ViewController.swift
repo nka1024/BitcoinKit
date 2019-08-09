@@ -145,11 +145,11 @@ class ViewController: UIViewController {
             walletBCH?.reloadTransactions(completion: { (txs) in
                 for tx in txs {
                     let sign = tx.positive ? "+" : "-"
-                    print("\(sign)\(tx.value)")
+                    print("\(sign)\(tx.value) ADDRS: \(tx.from) -> \(tx.to)")
                 }
             })
             walletBCH?.reloadFees(completion: {[weak self] fastest in
-                print("fastest fee rate: \(self?.walletBCH?.fastestFeeBTC ?? 0)")
+                print("fastest fee rate: \(self?.walletBCH?.rateBCH() ?? 0)")
             })
         }
         

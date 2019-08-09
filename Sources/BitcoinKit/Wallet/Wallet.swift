@@ -153,6 +153,10 @@ final public class Wallet {
         return ratesProvider.rateUSD
     }
 
+    public func rateBCH() -> Double {
+        return ratesProvider.rateBCH
+    }
+
     public func balance() -> UInt64 {
         return balanceProvider.balance
     }

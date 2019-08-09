@@ -116,7 +116,7 @@ private extension Sequence where Element == BitcoinComTransaction {
     }
     
     func asBTCTransactions(address: String) -> [BitcoinKitTransaction] {
-        return compactMap { $0.asBTCTransaction(address: address) }
+        return compactMap { $0.asBCHTransaction(address: address) }
     }
 }
 
@@ -142,6 +142,7 @@ private struct BitcoinComTransaction: Codable {
     let size: Int
     let valueIn: Decimal
     let fees: Decimal
+    let confirmations: Int
 
     func asTransaction() -> Transaction? {
         var inputs: [TransactionInput] = []
@@ -157,7 +158,7 @@ private struct BitcoinComTransaction: Codable {
         return Transaction(version: version, inputs: inputs, outputs: outputs, lockTime: locktime)
     }
     
-    func asBTCTransaction(address: String) -> BitcoinKitTransaction? {
+    func asBCHTransaction(address: String) -> BitcoinKitTransaction? {
         // positive
         var positive = true
         for input in vin {
@@ -167,6 +168,17 @@ private struct BitcoinComTransaction: Codable {
             }
         }
         
+        var fromAddr = ""
+        var toAddr = ""
+        for inpt in vin {
+            fromAddr = inpt.addr
+        }
+        
+        for outpt in vout {
+            if let to = outpt.scriptPubKey.addresses.first {
+                toAddr = to
+            }
+        }
         
         // value
         var value = UInt64(0)
@@ -183,9 +195,11 @@ private struct BitcoinComTransaction: Codable {
             value = v
         } else {
             var v = UInt64(0)
-            for inp in vin {
-                if inp.addr != address {
-                    v += UInt64((Double(inp.value) ?? 0) * 100_000_000)
+            for out in vout {
+                for addr in out.scriptPubKey.addresses {
+                    if addr != address {
+                        v += UInt64((Double(out.value) ?? 0) * 100_000_000)
+                    }
                 }
             }
             value = v
@@ -193,13 +207,13 @@ private struct BitcoinComTransaction: Codable {
         return BitcoinKitTransaction(timestamp: "",
                                      positive: positive,
                                      hash: txid,
-                                     from: "",
-                                     to: "",
+                                     from: fromAddr,
+                                     to: toAddr,
                                      value: value,
                                      input: "",
                                      contract: "",
-                                     tokenSymbol: "",
-                                     confirmations: 0)
+                                     tokenSymbol: "BCH",
+                                     confirmations: UInt64(confirmations))
     }
 }
 
